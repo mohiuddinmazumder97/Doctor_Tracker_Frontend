@@ -8,7 +8,24 @@ import type { NextConfig } from "next";
  *
  * BACKEND_URL is server-only (no NEXT_PUBLIC_ prefix) — it is never sent to the browser.
  */
-const backendUrl = (process.env.BACKEND_URL ?? "http://localhost:5000").replace(/\/+$/, "");
+function resolveBackendUrl(raw: string | undefined): string {
+  // Tolerate common dashboard paste mistakes: whitespace, quotes, a missing scheme,
+  // trailing slashes, or a trailing /api (the rewrite adds /api itself).
+  let value = (raw ?? "").trim().replace(/^["']|["']$/g, "").trim();
+  if (!value) return "http://localhost:5000";
+  if (!/^https?:\/\//i.test(value)) value = `https://${value}`;
+  value = value.replace(/\/+$/, "").replace(/\/api$/i, "");
+  try {
+    const url = new URL(value);
+    return `${url.protocol}//${url.host}${url.pathname.replace(/\/+$/, "")}`;
+  } catch {
+    throw new Error(
+      `BACKEND_URL is not a valid URL. Set it to the API origin, e.g. https://your-api.onrender.com`,
+    );
+  }
+}
+
+const backendUrl = resolveBackendUrl(process.env.BACKEND_URL);
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
