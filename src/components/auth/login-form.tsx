@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -36,6 +36,7 @@ export function LoginForm() {
   const signedOut = searchParams.get("signedOut") === "1";
   const login = useLogin();
   const [showPassword, setShowPassword] = useState(false);
+  const uid = useId();
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -96,10 +97,10 @@ export function LoginForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="email">Email address</FieldLabel>
+              <FieldLabel htmlFor={`${uid}-email`}>Email address</FieldLabel>
               <Input
                 {...field}
-                id="email"
+                id={`${uid}-email`}
                 type="email"
                 autoComplete="username"
                 inputMode="email"
@@ -118,11 +119,11 @@ export function LoginForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <FieldLabel htmlFor={`${uid}-password`}>Password</FieldLabel>
               <div className="relative">
                 <Input
                   {...field}
-                  id="password"
+                  id={`${uid}-password`}
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   placeholder="Enter your password"

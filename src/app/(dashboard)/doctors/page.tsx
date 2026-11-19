@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/shared/page-header";
+import { Suspense } from "react";
+import { DoctorsListView } from "@/components/doctors/doctors-list-view";
+import { ListPageSkeleton } from "@/components/shared/page-skeletons";
 
 export const metadata: Metadata = { title: "Doctors" };
 
-// Doctor list, filters and CRUD are implemented in Phase 5.
+// Static shell; the list reads URL state (search, filters, page) on the client.
 export default function DoctorsPage() {
-  return <PageHeader title="Doctors" description="Manage your medical staff and their patients." />;
+  return (
+    <Suspense fallback={<ListPageSkeleton />}>
+      <DoctorsListView />
+    </Suspense>
+  );
 }

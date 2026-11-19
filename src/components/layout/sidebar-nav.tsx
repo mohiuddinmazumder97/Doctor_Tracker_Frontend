@@ -2,17 +2,36 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS, isNavItemActive } from "./nav-items";
 
-export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
-  const pathname = usePathname();
+interface SidebarNavProps {
+  onNavigate?: () => void;
+}
 
+/**
+ * The pathname is runtime data on dynamic routes (/doctors/[id]), so it is read inside a
+ * Suspense boundary; the fallback is the same menu without the active highlight.
+ */
+export function SidebarNav(props: SidebarNavProps) {
+  return (
+    <Suspense fallback={<SidebarNavLinks {...props} pathname={null} />}>
+      <ActiveSidebarNav {...props} />
+    </Suspense>
+  );
+}
+
+function ActiveSidebarNav(props: SidebarNavProps) {
+  return <SidebarNavLinks {...props} pathname={usePathname()} />;
+}
+
+function SidebarNavLinks({ onNavigate, pathname }: SidebarNavProps & { pathname: string | null }) {
   return (
     <nav aria-label="Main" className="flex flex-col gap-1">
       <p className="px-3 pb-1.5 text-[11px] font-medium tracking-wider text-muted-foreground/80 uppercase">Menu</p>
       {NAV_ITEMS.map(({ title, href, icon: Icon }) => {
-        const active = isNavItemActive(pathname, href);
+        const active = pathname !== null && isNavItemActive(pathname, href);
         return (
           <Link
             key={href}
