@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/shared/page-header";
+import { Suspense } from "react";
+import { DashboardSkeleton } from "@/components/shared/page-skeletons";
+import { DashboardView } from "@/components/dashboard/dashboard-view";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
-// Analytics widgets are implemented in Phase 7.
+// Static shell; the view reads ?period / ?interval and the browser time zone on the client.
 export default function DashboardPage() {
-  return <PageHeader title="Dashboard" description="Overview of your doctors, patients and registrations." />;
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardView />
+    </Suspense>
+  );
 }

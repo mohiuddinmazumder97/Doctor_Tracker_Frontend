@@ -19,6 +19,8 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
   --color-chart-5: var(--chart-5);
+  --color-chart-accent: var(--chart-accent);
+  --color-chart-other: var(--chart-other);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
@@ -73,11 +75,16 @@
   --border: oklch(0.929 0.013 255.508);
   --input: oklch(0.904 0.014 255.5);
   --ring: oklch(0.6 0.104 184.704);
-  --chart-1: oklch(0.6 0.104 184.704);
-  --chart-2: oklch(0.546 0.245 262.881);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.645 0.246 16.439);
-  --chart-5: oklch(0.558 0.288 302.321);
+  /* Data-viz tokens — validated with the dataviz palette validator against the card
+     surfaces (#ffffff light, #0f172b dark). Categorical order is fixed, never cycled. */
+  --chart-accent: #0d9488;
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
+  --chart-other: #c4c9d2;
+  --chart-grid: oklch(0.929 0.013 255.508);
   --radius: 0.75rem;
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.372 0.044 257.287);
@@ -110,11 +117,14 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.6 0.104 184.704);
-  --chart-1: oklch(0.704 0.123 182.503);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.828 0.189 84.429);
-  --chart-4: oklch(0.712 0.194 13.428);
-  --chart-5: oklch(0.627 0.265 303.9);
+  --chart-accent: #0d9488;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
+  --chart-other: #475569;
+  --chart-grid: oklch(1 0 0 / 8%);
   --sidebar: oklch(0.208 0.042 265.755);
   --sidebar-foreground: oklch(0.869 0.022 252.894);
   --sidebar-primary: oklch(0.704 0.123 182.503);
