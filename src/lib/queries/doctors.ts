@@ -15,10 +15,11 @@ export function useDoctors(params: DoctorListParams) {
   });
 }
 
-export function useDoctor(id: string) {
+export function useDoctor(id: string, options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: queryKeys.doctors.detail(id),
     queryFn: ({ signal }) => doctorsApi.get(id, signal),
+    enabled: options.enabled ?? true,
   });
 }
 

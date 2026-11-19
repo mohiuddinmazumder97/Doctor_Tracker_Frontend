@@ -1,13 +1,13 @@
 "use client";
 
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import { PersonAvatar } from "@/components/shared/person-avatar";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { useDoctorSearch } from "@/lib/queries/doctors";
+import { useDoctor, useDoctorSearch } from "@/lib/queries/doctors";
 import { cn } from "@/lib/utils";
 import type { DoctorSummary } from "@/types/models";
 
@@ -21,10 +21,28 @@ interface DoctorSelectProps {
   invalid?: boolean;
   disabled?: boolean;
   onBlur?: () => void;
+  placeholder?: string;
+  /** Adds an "all" option that clears the selection (used when the picker is a list filter). */
+  clearOption?: { label: string; onClear: () => void };
+  className?: string;
 }
 
+const OBJECT_ID = /^[a-f\d]{24}$/i;
+
 /** Searchable doctor picker. Searches server-side, so it scales past a few dozen doctors. */
-export function DoctorSelect({ value, onChange, selectedDoctor, excludeId, id, invalid, disabled, onBlur }: DoctorSelectProps) {
+export function DoctorSelect({
+  value,
+  onChange,
+  selectedDoctor,
+  excludeId,
+  id,
+  invalid,
+  disabled,
+  onBlur,
+  placeholder = "Select a doctor",
+  clearOption,
+  className,
+}: DoctorSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 250);
@@ -32,11 +50,14 @@ export function DoctorSelect({ value, onChange, selectedDoctor, excludeId, id, i
   const [picked, setPicked] = useState<DoctorSummary | null>(null);
 
   const doctors = (data?.items ?? []).filter((d) => d._id !== excludeId);
-  const current =
+  const known =
     (picked?._id === value ? picked : null) ??
     (selectedDoctor?._id === value ? selectedDoctor : null) ??
     doctors.find((d) => d._id === value) ??
     null;
+  // A value with no known label (e.g. ?doctorId= in a shared URL) is resolved by id.
+  const lookup = useDoctor(value, { enabled: Boolean(value) && !known && OBJECT_ID.test(value) });
+  const current: DoctorSummary | null = known ?? lookup.data ?? null;
 
   return (
     <Popover
@@ -55,7 +76,7 @@ export function DoctorSelect({ value, onChange, selectedDoctor, excludeId, id, i
           aria-expanded={open}
           aria-invalid={invalid}
           disabled={disabled}
-          className={cn("h-9 w-full justify-between bg-card px-3 font-normal", !current && "text-muted-foreground")}
+          className={cn("h-9 w-full justify-between bg-card px-3 font-normal", !current && "text-muted-foreground", className)}
         >
           {current ? (
             <span className="flex min-w-0 items-center gap-2">
@@ -63,8 +84,13 @@ export function DoctorSelect({ value, onChange, selectedDoctor, excludeId, id, i
               <span className="truncate">{current.name}</span>
               <span className="hidden truncate text-xs text-muted-foreground sm:inline">· {current.specialization}</span>
             </span>
+          ) : value && lookup.isLoading ? (
+            "Loading…"
           ) : (
-            "Select a doctor"
+            <span className="flex items-center gap-2">
+              {clearOption && <Users className="size-4" aria-hidden />}
+              {placeholder}
+            </span>
           )}
           <ChevronsUpDown className="opacity-50" aria-hidden />
         </Button>
@@ -80,6 +106,25 @@ export function DoctorSelect({ value, onChange, selectedDoctor, excludeId, id, i
               </div>
             ) : (
               <CommandEmpty>{isError ? "Could not load doctors." : "No doctors found."}</CommandEmpty>
+            )}
+            {clearOption && !search && (
+              <CommandGroup>
+                <CommandItem
+                  value="__all__"
+                  onSelect={() => {
+                    setPicked(null);
+                    clearOption.onClear();
+                    setOpen(false);
+                  }}
+                  className="gap-2.5"
+                >
+                  <span className="flex size-7 items-center justify-center rounded-full bg-muted">
+                    <Users className="size-3.5" aria-hidden />
+                  </span>
+                  <span className="flex-1">{clearOption.label}</span>
+                  <Check className={cn("size-4", !value ? "opacity-100" : "opacity-0")} aria-hidden />
+                </CommandItem>
+              </CommandGroup>
             )}
             {doctors.length > 0 && (
               <CommandGroup heading={search ? "Results" : "Doctors"}>

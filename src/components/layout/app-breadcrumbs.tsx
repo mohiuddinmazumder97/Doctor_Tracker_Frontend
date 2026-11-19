@@ -44,7 +44,10 @@ export function AppBreadcrumbs() {
           const hideOnMobile = index < crumbs.length - 2;
           return (
             <Fragment key={crumb.href}>
-              {index > 0 && <BreadcrumbSeparator className={hideOnMobile ? "hidden md:block" : undefined} />}
+              {/* A separator is hidden on mobile when the crumb before it is hidden. */}
+              {index > 0 && (
+                <BreadcrumbSeparator className={index - 1 < crumbs.length - 2 ? "hidden md:block" : undefined} />
+              )}
               <BreadcrumbItem className={hideOnMobile ? "hidden md:inline-flex" : "min-w-0"}>
                 {isLast ? (
                   <BreadcrumbPage className="truncate font-medium">{crumb.label}</BreadcrumbPage>
