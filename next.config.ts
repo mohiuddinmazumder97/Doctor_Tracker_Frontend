@@ -11,16 +11,28 @@ import type { NextConfig } from "next";
 function resolveBackendUrl(raw: string | undefined): string {
   // Tolerate common dashboard paste mistakes: whitespace, quotes, a missing scheme,
   // trailing slashes, or a trailing /api (the rewrite adds /api itself).
-  let value = (raw ?? "").trim().replace(/^["']|["']$/g, "").trim();
-  if (!value) return "http://localhost:5000";
+  const original = (raw ?? "").trim();
+  if (!original) return "http://localhost:5000";
+  // Pull out an embedded URL, so "BACKEND_URL=https://…" or a value with stray text still works.
+  const embedded = original.match(/https?:\/\/[^\s"'<>]+/i)?.[0];
+  let value = embedded ?? original.replace(/^["']|["']$/g, "").trim();
   if (!/^https?:\/\//i.test(value)) value = `https://${value}`;
   value = value.replace(/\/+$/, "").replace(/\/api$/i, "");
   try {
     const url = new URL(value);
     return `${url.protocol}//${url.host}${url.pathname.replace(/\/+$/, "")}`;
   } catch {
+    // Describe the value's shape without printing it (hosts mask secrets in logs anyway).
+    const shape = [
+      `length ${original.length}`,
+      /\s/.test(original) && "contains whitespace",
+      original.includes("=") && 'contains "="',
+      /^https?:\/\//i.test(original) ? "starts with http(s)://" : "no http(s):// scheme",
+    ]
+      .filter(Boolean)
+      .join(", ");
     throw new Error(
-      `BACKEND_URL is not a valid URL. Set it to the API origin, e.g. https://your-api.onrender.com`,
+      `BACKEND_URL is not a valid URL (${shape}). Set it to the API origin only, e.g. https://your-api.onrender.com`,
     );
   }
 }
