@@ -3,7 +3,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { doctorsApi, type DoctorListParams, type DoctorPatientsParams } from "@/lib/api/doctors";
 import type { DoctorFormValues } from "@/lib/validations/doctor";
-import type { Doctor } from "@/types/models";
 import { queryKeys } from "./keys";
 
 export function useDoctors(params: DoctorListParams) {
@@ -67,11 +66,7 @@ export function useUpdateDoctor(id: string) {
   return useMutation({
     mutationFn: (values: Partial<DoctorFormValues>) => doctorsApi.update(id, values),
     onSuccess: (doctor) => {
-      // PATCH returns the doctor without patientCount — keep the cached count.
-      queryClient.setQueryData<Doctor>(queryKeys.doctors.detail(id), (previous) => ({
-        ...doctor,
-        patientCount: previous?.patientCount ?? doctor.patientCount ?? 0,
-      }));
+      queryClient.setQueryData(queryKeys.doctors.detail(id), doctor);
       void invalidateDoctorData(queryClient);
       // Patient rows embed the doctor's name.
       void queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });

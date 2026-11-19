@@ -179,7 +179,7 @@ erDiagram
 
 ## API endpoints
 
-All responses use one envelope: `{ "success": true, "data": …, "meta"?: { page, limit, total, totalPages } }` or `{ "success": false, "error": { code, message, details? } }`. Full reference with examples: **[backend README → API reference](https://github.com/mohiuddinmazumder97/Doctor_Tracker_Backend#api-reference)**.
+All responses use one envelope: `{ "success": true, "data": …, "meta"?: { page, limit, total, totalPages } }` or `{ "success": false, "error": { code, message, details? } }`. Full reference with examples: **[backend README → API reference](https://github.com/mohiuddinmazumder97/Doctor_Tracker_Backend#api-reference)**. Interactive Swagger UI docs are served by the API at `/api/docs`.
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
@@ -297,7 +297,7 @@ npm run dev
 
 ## Testing
 
-**API (backend):** `npm test` — 33 integration tests on an in-memory MongoDB covering login/logout/me, cookie flags, timing-safe errors, rate limiting, protected routes, CRUD, duplicate emails, the deletion policy, search (including regex-injection), filters, pagination, projections, every dashboard aggregation, and time-zone/DST bucketing.
+**API (backend):** `npm test` — 40 integration tests on an in-memory MongoDB covering login/logout/me, cookie flags, timing-safe errors, rate limiting, protected routes, CRUD, duplicate emails, the deletion policy, search (including regex-injection), filters, pagination, projections, every dashboard aggregation, time-zone/DST bucketing, and an OpenAPI contract test that validates real responses against the Swagger spec.
 
 **Browser (frontend):** `npm run test:e2e` — four Playwright suites driving a real Chrome against the real app and API (details in [`e2e/README.md`](e2e/README.md)). They cover every workflow in the brief:
 
