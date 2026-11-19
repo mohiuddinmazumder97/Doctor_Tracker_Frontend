@@ -31,15 +31,15 @@ function Delta({ current, previous }: { current: number; previous: number }) {
 
 function Tile({ label, value, icon: Icon, footer }: { label: string; value: number; icon: LucideIcon; footer: ReactNode }) {
   return (
-    <Card className="gap-3 px-5 py-5">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-muted-foreground">{label}</p>
-        <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-primary">
+    <Card className="gap-2 px-4 py-4 sm:gap-3 sm:px-5 sm:py-5">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-xs font-medium text-muted-foreground sm:text-sm">{label}</p>
+        <span className="hidden size-8 shrink-0 items-center justify-center rounded-lg bg-accent text-primary sm:flex">
           <Icon className="size-4" aria-hidden />
         </span>
       </div>
       {/* Proportional figures for big standalone numbers. */}
-      <p className="text-3xl font-semibold tracking-tight">{value.toLocaleString()}</p>
+      <p className="text-2xl font-semibold tracking-tight sm:text-3xl">{value.toLocaleString()}</p>
       <p className="text-xs text-muted-foreground">{footer}</p>
     </Card>
   );
@@ -64,9 +64,9 @@ export function KpiTiles({ data, isPending, isError, error, onRetry }: KpiTilesP
 
   if (isPending || !data) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-busy aria-label="Loading statistics">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4" aria-busy aria-label="Loading statistics">
         {Array.from({ length: 4 }, (_, i) => (
-          <Card key={i} className="gap-3 px-5 py-5">
+          <Card key={i} className="gap-3 px-4 py-4 sm:px-5 sm:py-5">
             <Skeleton className="h-4 w-28" />
             <Skeleton className="h-8 w-20" />
             <Skeleton className="h-3 w-36" />
@@ -79,7 +79,7 @@ export function KpiTiles({ data, isPending, isError, error, onRetry }: KpiTilesP
   const { totals, thisMonth, lastMonth, averagePatientsPerDoctor } = data;
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
       <Tile
         label="Total doctors"
         value={totals.doctors}
